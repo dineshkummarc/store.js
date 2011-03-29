@@ -76,18 +76,24 @@ var store = (function(){
 		api.clear = function() { for (var key in storage ) { delete storage[key] } }
 
 	} else if (doc.documentElement.addBehavior) {
-		var storage = doc.createElement('div')
+		var iframe = doc.createElement('iframe'),
+			storage = doc.createElement('div');
+		iframe.frameBorder = 0;
+		iframe.allowTransparency = true;
+		//iframe.src = "javascript:var d = document.open(); d.domain='"+ document.domain +"';d.close();";
+		doc.body.appendChild(iframe);
+
 		function withIEStorage(storeFunction) {
 			return function() {
 				var args = Array.prototype.slice.call(arguments, 0)
 				args.unshift(storage)
 				// See http://msdn.microsoft.com/en-us/library/ms531081(v=VS.85).aspx
 				// and http://msdn.microsoft.com/en-us/library/ms531424(v=VS.85).aspx
-				doc.body.appendChild(storage)
+				iframe.body.appendChild(storage)
 				storage.addBehavior('#default#userData')
 				storage.load(localStorageName)
 				var result = storeFunction.apply(api, args)
-				doc.body.removeChild(storage)
+				iframe.body.removeChild(storage)
 				return result
 			}
 		}
