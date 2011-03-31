@@ -52,7 +52,7 @@ Loading it from any level in the folder hierarchy makes it possible to pages in 
 IE6/7 limitation
 ----------------
 
-Storage size in IE6 and IE7 is still limited to 120KB, see http://msdn.microsoft.com/en-us/library/ms531424%28v=VS.85%29.aspx
+Storage size in IE6 and IE7 is still limited to 128KB, see http://msdn.microsoft.com/en-us/library/ms531424%28v=VS.85%29.aspx
 
 How does it work?
 ------------------
