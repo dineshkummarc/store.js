@@ -44,6 +44,7 @@ This has the following consequences:
 
 - the "same folder" policy is no longer a problem,
 - splitting the plugin into browser-specific parts results in a smaller filesize,
+- the store.iframe.html file has to be hosted on the same domain as your pages (CDNs are not an option),
 - it is harder to load the script using a script loader (but probably possible with some tweaks).
 
 The IE6/7 part of the plugin doesn't have to be loaded from the root of your website.
