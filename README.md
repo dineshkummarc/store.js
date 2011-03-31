@@ -49,6 +49,11 @@ This has the following consequences:
 The IE6/7 part of the plugin doesn't have to be loaded from the root of your website.
 Loading it from any level in the folder hierarchy makes it possible to pages in subfolder to access the same items.
 
+IE6/7 limitation
+----------------
+
+Storage size in IE6 and IE7 is still limited to 120KB, see http://msdn.microsoft.com/en-us/library/ms531424%28v=VS.85%29.aspx
+
 How does it work?
 ------------------
 store.js uses localStorage when available, and falls back on globalStorage for earlier versions of Firefox and the userData behavior in IE6 and IE7. No flash to slow down your page load. No cookies to fatten your network requests.
