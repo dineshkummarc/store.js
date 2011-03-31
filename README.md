@@ -27,7 +27,7 @@ store.js depends on JSON for serialization.
 How is this fork different?
 ---------------------------
 
-This fork of @marcuswestin's store.js aims at working around IE6 and IE7 "same directory" policy.
+This fork of [marcuswestin](http://marcuswest.in)'s store.js aims at working around IE6 and IE7 "same directory" policy.
 To do so, the plugin is loaded from a page (usually) hosted at the root of your website, by an iframe.
 
 The code to use to load the plugin is the following:
@@ -47,7 +47,7 @@ This has the following consequences:
 - it is harder to load the script using a script loader (but probably possible with some tweaks).
 
 The IE6/7 part of the plugin doesn't have to be loaded from the root of your website.
-Loading it from any level in the folder hierarchy makes it possible to pages in subfolder to access the same items.
+Loading it from any level in the folder hierarchy makes it possible for pages in subfolders to access the same items.
 
 IE6/7 limitation
 ----------------
