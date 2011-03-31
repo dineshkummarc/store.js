@@ -1,112 +1,123 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
+<html>
 <head>
-	<title>store.js test</title>
-	<style type="text/css">
-		body { margin: 50px; font-family: helvetica; color: #333; }
-		div { color: green; }
-		#errorOutput div { color: red; }
-	</style>
-	<script src="json.js"></script>
-	<script src="store.js"></script>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css" media="screen" />
+	<script type="text/javascript" src="http://code.jquery.com/qunit/git/qunit.js"></script>
+  <title>Store.js &amp; Store.space.js tests</title>
 </head>
 <body>
-	tests for <a href="http://github.com/marcuswestin/store.js">store.js</a>
-	<div id="errorOutput"></div>
+	<h1 id="qunit-header">Store.js &amp; Store.space.js tests</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+	<div id="qunit-fixture">test markup, will be hidden</div>
 
+	<!--[if lt IE 8 ]>
+	<iframe frameborder="0" width="0" height="0" src="/store.iframe.html"></iframe>
+	<![endif]-->
+	<!--[if (gte IE 8)|!(IE)]><!--> 
+	<script src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+	<script src="store.js"></script>
+	<!--<![endif]-->
+
+	<script src="https://github.com/lrbabe/store.space.js/raw/master/store.space.js"></script>
 	<script>
-		(function() {
-			var doc = document,
-				errorOutput = doc.getElementById('errorOutput'),
-				testFailed = false,
-				isSecondPass = (doc.location.hash == '#secondPass')
-
-			function outputError(msg) { errorOutput.appendChild(doc.createElement('div')).innerHTML = msg }
-			function assert(truthy, msg) { 
-				if (!truthy) {
-					outputError((isSecondPass ? 'second' : 'first') + ' pass bad assert: ' + msg);
-					if (store.disabled) { outputError('<br>Note that store.disabled == true') }
-					testFailed = true
-				}
-			}
+		jQuery(function() {
+    	
+    	module('Store');
+    	
+			test("get", function() {
+			  ok( !store.get('inexistantKey'), "simple get test" );
+			});
 			
-			function doFirstPass() {
-				store.clear()
-				
-				store.set('foo', 'bar')
-				assert(store.get('foo') == 'bar', "stored key 'foo' not equal to stored value 'bar'")
-
-				store.remove('foo')
-				assert(store.get('foo') == null, "removed key 'foo' not null")
-
-				store.set('foo', 'bar1')
-				store.set('foo', 'bar2')
-				assert(store.get('foo') == 'bar2', "key 'foo' is not equal to second value set 'bar2'")
-				
-				store.set('foo', 'bar')
-				store.set('bar', 'foo')
-				store.remove('foo')
-				assert(store.get('bar') == 'foo', "removing key 'foo' also removed key 'bar'")
-				
-				store.set('foo', 'bar')
-				store.set('bar', 'foo')
-				store.clear()
-				assert(store.get('foo') == null && store.get('bar') == null, "keys foo and bar not cleared after store cleared")
-				
-				store.transact('foosact', function(val) {
-					assert(typeof val == 'object', "new key is not an object at beginning of transaction")
-					val.foo = 'foo'
-				})
-				store.transact('foosact', function(val) {
-					assert(val.foo == 'foo', "first transaction did not register")
-					val.bar = 'bar'
-				})
-				assert(store.get('foosact').bar == 'bar', "second transaction did not register")
-
-				store.set('foo', { name: 'marcus', arr: [1,2,3] })
-				assert(typeof store.get('foo') == 'object', "type of stored object 'foo' is not 'object'")
-				assert(store.get('foo') instanceof Object, "stored object 'foo' is not an instance of Object")
-				assert(store.get('foo').name == 'marcus', "property 'name' of stored object 'foo' is not 'marcus'")
-				assert(store.get('foo').arr instanceof Array, "Array property 'arr' of stored object 'foo' is not an instance of Array")
-				assert(store.get('foo').arr.length == 3, "The length of Array property 'arr' stored on object 'foo' is not 3")
-				
-				store.remove('circularReference')
-				var circularOne = {}
-				var circularTwo = { one:circularOne }
-				circularOne.two = circularTwo
-				var threw = false
-				try { store.set('circularReference', circularOne) }
-				catch(e) { threw = true }
-				assert(threw, "storing object with circular reference did not throw")
-				assert(!store.get('circularReference'), "attempting to store object with circular reference which should have faile affected store state")
-
-				// The following stored values get tested in doSecondPass after a page reload
-				store.set('firstPassFoo', 'bar')
-				store.set('firstPassObj', { woot: true })
-			}
+			test("set", function() {
+			  ok( !store.set('randomKey', 'randomValue'), "simple set test" );
+			});
 			
-			function doSecondPass() {
-				assert(store.get('firstPassFoo') == 'bar', "first pass key 'firstPassFoo' not equal to stored value 'bar'")
-				store.clear()
-				assert(store.get('firstPassFoo') == null, "first pass key 'firstPassFoo' not null after store cleared")
-			}
-			
-			try {
-				if (isSecondPass) { doSecondPass() }
-				else { doFirstPass() }
-			} catch(e) {
-				assert(false, 'Tests should not throw: "' + JSON.stringify(e) + '"')
-			}
+			test("set/get", function() {
+				var key = 'specificKey',
+					value = 'firstSpecificValue';
+			  store.set(key, value);
+			  equal( store.get(key), value, "can retrieve an item" );
+			  value = 'secondSpecificValue';
+			  store.set(key, value);
+			  equal( store.get(key), value, "can override an item" );
+			});
 
-			if (!testFailed) {
-				if (!isSecondPass) {
-					doc.location.hash = '#secondPass'
-					doc.location.reload()
-				} else {
-					doc.location.hash = '#'
-					doc.body.appendChild(doc.createElement('div')).innerHTML = 'Tests passed'
-				}
-			}
-		})()
-	</script>
+			test("remove", function() {
+				var key = 'specificKey';
+			  store.set(key, 'value');
+			  store.remove(key)
+			  ok( !store.get(key), "item can be removed" );
+			});
+
+			test("clear", function() {
+				var key = 'specificKey';
+			  store.set(key, 'value');
+			  store.clear()
+			  ok( !store.get(key), "items have been removed" );
+			});
+			
+			module('Store Space');
+			
+			var myStore = store.space('my');
+			
+			test("get", function() {
+			  ok( !myStore('inexistantKey'), "simple get test" );
+			});
+			
+			test("set", function() {
+			  ok( !myStore('randomKey', 'randomValue'), "simple set test" );
+			});
+			
+			test("set/get", function() {
+				var key = 'specificKey',
+					key2 = 'anotherKey',
+					value = 'thirdSpecificValue';
+			  myStore(key, value);
+			  equal( myStore(key), value, "can retrieve an item" );
+			  value = 'fourthSpecificValue';
+			  myStore(key, value);
+			  equal( myStore(key), value, "can override an item" );
+			  value = 'fivthSpecificValue';
+			  myStore(key2, value);
+			  equal( myStore(key2), value, "can store multiple items" );
+			});
+
+			test("remove", function() {
+				var key = 'specificKey',
+					key2 = 'anotherKey',
+					value = 'sixthSpecificValue';
+			  myStore(key, value);
+			  myStore.remove(key)
+			  ok( !myStore(key), "item can be removed" );
+			});
+
+			var store2 = store.space('_2');
+			
+			test("namespace", function() {
+				var key = 'specificKey',
+					value1 = 'value1',
+					value2 = 'value2',
+					value3 = 'value3';
+				myStore(key, value1);
+				store2(key, value2);
+				equal( myStore(key), value1, "items written in different namespaces do not overwrite each other");
+				store.set(key, value3);
+				store2(key, value2);
+				equal( store.get(key), value3, "items in the global namespace are not overwritten");
+			});
+			
+			test("clear", function() {
+				var key = 'specificKey';
+			  myStore(key, 'value');
+			  myStore.clear()
+			  ok( !myStore(key), "items have been removed" );
+			});
+
+		});
+  </script>
 </body>
 </html>

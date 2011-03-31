@@ -1,0 +1,13 @@
+<!DOCTYPE>
+<html>
+<body onload="go()">
+	<h1>Test store.js in iframe</h1>
+	<iframe frameborder="0" width="0" height="0" src="/store.iframe.html"></iframe>
+	<script>function go() {
+		var previous = store.get("key");
+		next = (Math.random() * 1E4)|0;
+		console.log(previous + " | " + next);
+		store.set("key", next);}
+	</script>
+</body>
+</html>

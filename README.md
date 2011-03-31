@@ -24,29 +24,30 @@ store.js exposes a simple API for cross browser local storage
 
 store.js depends on JSON for serialization.
 
-IE6/7 limitation
-----------------
-Access to the userData behavior in IE6 and IE7 is restricted to "same directory" in the path of the URL, much like access to localStorage is restricted to "same domain" in the protocol and host name of the URL. In addition, just as localStorage cannot be accessed across sub domains, userData behavior cannot be accessed across sub-directories.
+How is this fork different?
+---------------------------
 
-Here are some examples to demonstrate the IE6 and IE7 limitations:
+This fork of @marcuswestin's store.js aims at working around IE6 and IE7 "same directory" policy.
+To do so, the plugin is loaded from a page (usually) hosted at the root of your website, by an iframe.
 
-	// on http://example.com/path1/
-	store.set('foo', 1)
-	
-	// on http://example.com/path1/test.html the value of "foo"
-	// is readable because we are in the same "directory" /path1/
-	store.get('foo') == 1
-	store.set('bar', 2)
-	
-	// on http://example.com/path2/ the values of "foo" and "bar" are not readable
-	// because we are not in the same "directory" - the directory is not /path2/
-	store.get('foo') == null
-	store.get('bar') == null
+The code to use to load the plugin is the following:
 
-	// on http://example.com/path1/subpath/ the values of "foo" and "bar" are not
-	// readable here either, because we are in the directory /path1/subpath/.
-	store.get('foo') == null
-	store.get('bar') == null
+	<!--[if lt IE 8 ]>
+	<iframe frameborder="0" width="0" height="0" src="/store.iframe.html"></iframe>
+	<![endif]-->
+	<!--[if (gte IE 8)|!(IE)]><!--> 
+	<script src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+	<script src="store.js"></script>
+	<!--<![endif]-->
+
+This has the following consequences:
+
+- the "same folder" policy is no longer a problem,
+- splitting the plugin into browser-specific parts results in a smaller filesize,
+- it is harder to load the script using a script loader (but probably possible with some tweaks).
+
+The IE6/7 part of the plugin doesn't have to be loaded from the root of your website.
+Loading it from any level in the folder hierarchy makes it possible to pages in subfolder to access the same items.
 
 How does it work?
 ------------------
@@ -99,7 +100,7 @@ Supported browsers
  - Tested in IE7
  - Tested in IE8
  - Tested in Opera 10
-   - Opera 10.54
+ - Opera 10.54
 
 Supported but borken (please help fix)
 --------------------------------------
@@ -116,6 +117,7 @@ Unsupported browsers
 
 Forks
 ----
+ - original repository: https://github.com/marcuswestin/store.js
  - Sans JSON support (simple key/values only): https://github.com/cloudhead/store.js
  - jQueryfied version: https://github.com/whitmer/store.js 
  - Lint.js passing version (with semi-colons): https://github.com/StevenBlack/store.js
@@ -123,9 +125,7 @@ Forks
 TODO
 ----
  - I believe underlying APIs can throw under certain conditions. Where do we need try/catch?
- - Test different versions of Opera 10.X explicitly
-
-My repo: https://github.com/marcuswestin/store.js
+ - Test different versions of Opera 10.X explicitly 
 
 
   [JSON.js]: http://www.json.org/json2.js
