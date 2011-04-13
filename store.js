@@ -1,7 +1,7 @@
 /* localStorage polyfill with shorter API
  * 
  * inspired by and API compliant with @marcuswestins's store.js
- * Complete script and instructions available on github: https://github.com/lrbabe/store.js/
+ * Complete script and instructions available on github: https://github.com/louisremi/store.js/
  * 
  * author: @louis_remi
  * license: MIT
